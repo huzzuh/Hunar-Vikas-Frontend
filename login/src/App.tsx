@@ -13,7 +13,7 @@ const ROLES: { id: Role; icon: string; desc: string }[] = [
 
 function Logo() {
   return (
-    <a className="brand" href="#" aria-label="Hunar Vikas India home">
+    <a className="brand" href="/" aria-label="Hunar Vikas India home">
       <span className="brand-mark" aria-hidden="true">
         <svg viewBox="0 0 32 32" width="30" height="30">
           <path
@@ -36,7 +36,7 @@ function LoginVisual() {
     <aside className="brand-visual hero-fade" aria-label="Building a skilled Maharashtra">
       <img
         className="brand-visual-img"
-        src="/login-hero.png"
+        src={`${import.meta.env.BASE_URL}login-hero.png`}
         alt="Building a skilled Maharashtra — Your skills matter, your journey starts here. Learn new skills, find opportunities, get recognised, build a brighter future. A stronger Maharashtra with skilled communities."
       />
     </aside>
@@ -81,7 +81,7 @@ export default function App() {
             <span className="header-note hide-sm">
               <i className="fa-solid fa-shield-halved" aria-hidden="true" /> Secure sign-in
             </span>
-            <a href="#" className="btn btn-outline">
+            <a href="/" className="btn btn-outline">
               Back to Home
             </a>
           </div>

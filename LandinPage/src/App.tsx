@@ -63,7 +63,7 @@ function useReveal() {
 
 function Logo() {
   return (
-    <a className="brand" href="#">
+    <a className="brand" href="/">
       <span className="brand-mark" aria-hidden>
         <svg viewBox="0 0 32 32" width="30" height="30">
           <path d="M16 28C10 24 6 19 6 13c4 0 8 2 10 6-1-6 1-11 6-14 1 5 0 10-2 13 3-1 5-4 6-7 2 6-1 13-10 17z" fill="#0E6B4F" />
@@ -91,13 +91,13 @@ function Header() {
             </a>
           ))}
           <div className="nav-mobile-cta">
-            <a href="#" className="btn btn-outline">Sign In</a>
-            <a href="#" className="btn btn-primary">Get Started →</a>
+            <a href="/login/" className="btn btn-outline">Sign In</a>
+            <a href="/login/" className="btn btn-primary">Get Started →</a>
           </div>
         </nav>
         <div className="header-actions">
-          <a href="#" className="btn btn-outline hide-sm">Sign In</a>
-          <a href="#" className="btn btn-primary hide-sm">Get Started →</a>
+          <a href="/login/" className="btn btn-outline hide-sm">Sign In</a>
+          <a href="/login/" className="btn btn-primary hide-sm">Get Started →</a>
           <button className="icon-btn menu-btn" aria-label="Menu" onClick={() => setOpen((v) => !v)}>
             {open ? '✕' : '☰'}
           </button>
