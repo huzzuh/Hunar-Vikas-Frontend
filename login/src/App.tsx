@@ -44,6 +44,7 @@ function LoginVisual() {
 }
 
 export default function App() {
+  const [view, setView] = useState<'login' | 'forgot'>('login')
   const [role, setRole] = useState<Role>('Citizen')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -51,6 +52,9 @@ export default function App() {
   const [remember, setRemember] = useState(true)
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotError, setForgotError] = useState<string | undefined>(undefined)
+  const [forgotStatus, setForgotStatus] = useState<'idle' | 'loading' | 'sent'>('idle')
 
   function validate(): boolean {
     const next: typeof errors = {}
@@ -70,6 +74,31 @@ export default function App() {
     if (!validate()) return
     setStatus('loading')
     window.setTimeout(() => setStatus('success'), 900)
+  }
+
+  function openForgot() {
+    setForgotEmail(email.trim())
+    setForgotError(undefined)
+    setForgotStatus('idle')
+    setView('forgot')
+  }
+
+  function closeForgot() {
+    setView('login')
+    setForgotError(undefined)
+    setForgotStatus('idle')
+  }
+
+  function onForgotSubmit(e: FormEvent) {
+    e.preventDefault()
+    if (forgotStatus === 'loading') return
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(forgotEmail.trim())) {
+      setForgotError('Enter a valid email address.')
+      return
+    }
+    setForgotError(undefined)
+    setForgotStatus('loading')
+    window.setTimeout(() => setForgotStatus('sent'), 900)
   }
 
   return (
@@ -92,148 +121,253 @@ export default function App() {
         <div className="login-grid">
           <LoginVisual />
 
-          <section className="login-card hero-fade" style={{ animationDelay: '150ms' }} aria-label="Sign in">
-            <div className="login-head">
-              <h2>Welcome back</h2>
-              <p>Sign in to continue to your Hunar Vikas workspace.</p>
-            </div>
-
-            <div className="role-group" role="radiogroup" aria-label="I am signing in as">
-              {ROLES.map((r) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={role === r.id}
-                  className={`role-btn ${role === r.id ? 'active' : ''}`}
-                  onClick={() => setRole(r.id)}
-                >
-                  <i className={r.icon} aria-hidden="true" />
-                  <span>
-                    <strong>{r.id}</strong>
-                    <small>{r.desc}</small>
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {status === 'success' ? (
-              <div className="success" role="status">
-                <span className="success-ico">
-                  <i className="fa-solid fa-circle-check" aria-hidden="true" />
-                </span>
-                <div>
-                  <strong>Signed in as {role}</strong>
-                  <p>
-                    Demo only — this standalone login is not connected to a backend. <br />
-                    <span className="muted">{email.trim()} · Maharashtra</span>
-                  </p>
-                  <button
-                    type="button"
-                    className="btn btn-outline"
-                    onClick={() => {
-                      setStatus('idle')
-                      setPassword('')
-                    }}
-                  >
-                    Sign in with a different account
+          <section
+            className="login-card hero-fade"
+            style={{ animationDelay: '150ms' }}
+            aria-label={view === 'forgot' ? 'Reset password' : 'Sign in'}
+          >
+            {view === 'forgot' ? (
+              <>
+                <div className="login-head">
+                  <button type="button" className="back-link" onClick={closeForgot}>
+                    <i className="fa-solid fa-arrow-left" aria-hidden="true" /> Back to sign in
                   </button>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={onSubmit} noValidate>
-                <div className="field">
-                  <label htmlFor="email">Email address</label>
-                  <div className={`control ${errors.email ? 'invalid' : ''}`}>
-                    <i className="fa-regular fa-envelope" aria-hidden="true" />
-                    <input
-                      id="email"
-                      type="email"
-                      autoComplete="email"
-                      placeholder="you@example.in"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      aria-invalid={Boolean(errors.email)}
-                      aria-describedby={errors.email ? 'email-err' : undefined}
-                    />
-                  </div>
-                  {errors.email && (
-                    <small id="email-err" className="err" role="alert">
-                      {errors.email}
-                    </small>
-                  )}
+                  <h2>Reset your password</h2>
+                  <p>Enter the email you signed up with and we’ll send you a secure reset link.</p>
                 </div>
 
-                <div className="field">
-                  <div className="label-row">
-                    <label htmlFor="password">Password</label>
-                    <a href="#" className="forgot">
-                      Forgot password?
-                    </a>
+                {forgotStatus === 'sent' ? (
+                  <div className="success" role="status">
+                    <span className="success-ico">
+                      <i className="fa-solid fa-circle-check" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <strong>Reset link sent</strong>
+                      <p>
+                        If an account exists for <span className="muted">{forgotEmail.trim()}</span>, you’ll
+                        receive a password-reset link shortly. Check your inbox and spam folder.
+                      </p>
+                      <div className="success-actions">
+                        <button type="button" className="btn btn-primary" onClick={closeForgot}>
+                          Back to sign in
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline"
+                          onClick={() => setForgotStatus('idle')}
+                        >
+                          Use a different email
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className={`control ${errors.password ? 'invalid' : ''}`}>
-                    <i className="fa-solid fa-lock" aria-hidden="true" />
-                    <input
-                      id="password"
-                      type={showPw ? 'text' : 'password'}
-                      autoComplete="current-password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      aria-invalid={Boolean(errors.password)}
-                      aria-describedby={errors.password ? 'pw-err' : undefined}
-                    />
+                ) : (
+                  <form onSubmit={onForgotSubmit} noValidate>
+                    <div className="field">
+                      <label htmlFor="forgot-email">Email address</label>
+                      <div className={`control ${forgotError ? 'invalid' : ''}`}>
+                        <i className="fa-regular fa-envelope" aria-hidden="true" />
+                        <input
+                          id="forgot-email"
+                          type="email"
+                          autoComplete="email"
+                          placeholder="you@example.in"
+                          value={forgotEmail}
+                          onChange={(e) => setForgotEmail(e.target.value)}
+                          aria-invalid={Boolean(forgotError)}
+                          aria-describedby={forgotError ? 'forgot-email-err' : undefined}
+                          autoFocus
+                        />
+                      </div>
+                      {forgotError && (
+                        <small id="forgot-email-err" className="err" role="alert">
+                          {forgotError}
+                        </small>
+                      )}
+                    </div>
+
+                    <p className="forgot-note">
+                      <i className="fa-solid fa-shield-halved" aria-hidden="true" /> The link expires in 30
+                      minutes and can be used only once.
+                    </p>
+
                     <button
-                      type="button"
-                      className="pw-toggle"
-                      onClick={() => setShowPw((v) => !v)}
-                      aria-label={showPw ? 'Hide password' : 'Show password'}
+                      type="submit"
+                      className="btn btn-primary btn-lg btn-full"
+                      disabled={forgotStatus === 'loading'}
                     >
-                      <i className={showPw ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'} aria-hidden="true" />
+                      {forgotStatus === 'loading' ? (
+                        <>
+                          <span className="spinner" aria-hidden="true" /> Sending link…
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa-regular fa-paper-plane" aria-hidden="true" /> Send reset link
+                        </>
+                      )}
                     </button>
+                  </form>
+                )}
+
+                <p className="signup">
+                  Remembered your password?{' '}
+                  <button type="button" className="link-btn" onClick={closeForgot}>
+                    Sign in →
+                  </button>
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="login-head">
+                  <h2>Welcome back</h2>
+                  <p>Sign in to continue to your Hunar Vikas workspace.</p>
+                </div>
+
+                <div className="role-group" role="radiogroup" aria-label="I am signing in as">
+                  {ROLES.map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={role === r.id}
+                      className={`role-btn ${role === r.id ? 'active' : ''}`}
+                      onClick={() => setRole(r.id)}
+                    >
+                      <i className={r.icon} aria-hidden="true" />
+                      <span>
+                        <strong>{r.id}</strong>
+                        <small>{r.desc}</small>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {status === 'success' ? (
+                  <div className="success" role="status">
+                    <span className="success-ico">
+                      <i className="fa-solid fa-circle-check" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <strong>Signed in as {role}</strong>
+                      <p>
+                        Demo only — this standalone login is not connected to a backend. <br />
+                        <span className="muted">{email.trim()} · Maharashtra</span>
+                      </p>
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        onClick={() => {
+                          setStatus('idle')
+                          setPassword('')
+                        }}
+                      >
+                        Sign in with a different account
+                      </button>
+                    </div>
                   </div>
-                  {errors.password && (
-                    <small id="pw-err" className="err" role="alert">
-                      {errors.password}
-                    </small>
-                  )}
-                </div>
+                ) : (
+                  <form onSubmit={onSubmit} noValidate>
+                    <div className="field">
+                      <label htmlFor="email">Email address</label>
+                      <div className={`control ${errors.email ? 'invalid' : ''}`}>
+                        <i className="fa-regular fa-envelope" aria-hidden="true" />
+                        <input
+                          id="email"
+                          type="email"
+                          autoComplete="email"
+                          placeholder="you@example.in"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          aria-invalid={Boolean(errors.email)}
+                          aria-describedby={errors.email ? 'email-err' : undefined}
+                        />
+                      </div>
+                      {errors.email && (
+                        <small id="email-err" className="err" role="alert">
+                          {errors.email}
+                        </small>
+                      )}
+                    </div>
 
-                <label className="remember">
-                  <input
-                    type="checkbox"
-                    checked={remember}
-                    onChange={(e) => setRemember(e.target.checked)}
-                  />
-                  <span className="checkmark" aria-hidden="true">
-                    {remember && <i className="fa-solid fa-check" />}
-                  </span>
-                  Keep me signed in on this device
-                </label>
+                    <div className="field">
+                      <div className="label-row">
+                        <label htmlFor="password">Password</label>
+                        <button type="button" className="forgot forgot-btn" onClick={openForgot}>
+                          Forgot password?
+                        </button>
+                      </div>
+                      <div className={`control ${errors.password ? 'invalid' : ''}`}>
+                        <i className="fa-solid fa-lock" aria-hidden="true" />
+                        <input
+                          id="password"
+                          type={showPw ? 'text' : 'password'}
+                          autoComplete="current-password"
+                          placeholder="••••••••"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          aria-invalid={Boolean(errors.password)}
+                          aria-describedby={errors.password ? 'pw-err' : undefined}
+                        />
+                        <button
+                          type="button"
+                          className="pw-toggle"
+                          onClick={() => setShowPw((v) => !v)}
+                          aria-label={showPw ? 'Hide password' : 'Show password'}
+                        >
+                          <i
+                            className={showPw ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'}
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </div>
+                      {errors.password && (
+                        <small id="pw-err" className="err" role="alert">
+                          {errors.password}
+                        </small>
+                      )}
+                    </div>
 
-                <button type="submit" className="btn btn-primary btn-lg btn-full" disabled={status === 'loading'}>
-                  {status === 'loading' ? (
-                    <>
-                      <span className="spinner" aria-hidden="true" /> Signing in…
-                    </>
-                  ) : (
-                    <>Sign In →</>
-                  )}
-                </button>
+                    <label className="remember">
+                      <input
+                        type="checkbox"
+                        checked={remember}
+                        onChange={(e) => setRemember(e.target.checked)}
+                      />
+                      <span className="checkmark" aria-hidden="true">
+                        {remember && <i className="fa-solid fa-check" />}
+                      </span>
+                      Keep me signed in on this device
+                    </label>
 
-                <div className="divider" aria-hidden="true">
-                  <span>or</span>
-                </div>
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-lg btn-full"
+                      disabled={status === 'loading'}
+                    >
+                      {status === 'loading' ? (
+                        <>
+                          <span className="spinner" aria-hidden="true" /> Signing in…
+                        </>
+                      ) : (
+                        <>Sign In →</>
+                      )}
+                    </button>
 
-                <button type="button" className="btn btn-outline btn-lg btn-full">
-                  <i className="fa-solid fa-mobile-screen" aria-hidden="true" /> Continue with Mobile OTP
-                </button>
-              </form>
+                    <div className="divider" aria-hidden="true">
+                      <span>or</span>
+                    </div>
+
+                    <button type="button" className="btn btn-outline btn-lg btn-full">
+                      <i className="fa-solid fa-mobile-screen" aria-hidden="true" /> Continue with Mobile OTP
+                    </button>
+                  </form>
+                )}
+
+                <p className="signup">
+                  New to Hunar Vikas India? <a href="#">Create an account →</a>
+                </p>
+              </>
             )}
-
-            <p className="signup">
-              New to Hunar Vikas India? <a href="#">Create an account →</a>
-            </p>
 
             <ul className="login-trust">
               <li>
