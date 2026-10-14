@@ -92,7 +92,7 @@ function Header() {
           ))}
           <div className="nav-mobile-cta">
             <a href="/login/" className="btn btn-outline">Sign In</a>
-            <a href="/login/" className="btn btn-primary">Get Started →</a>
+            <a href="/registration/" className="btn btn-primary">Get Started →</a>
           </div>
         </nav>
         <div className="header-actions">

@@ -364,7 +364,7 @@ export default function App() {
                 )}
 
                 <p className="signup">
-                  New to Hunar Vikas India? <a href="#">Create an account →</a>
+                  New to Hunar Vikas India? <a href="/registration/">Create an account →</a>
                 </p>
               </>
             )}

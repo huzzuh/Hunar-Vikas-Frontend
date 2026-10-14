@@ -1,10 +1,11 @@
 services:
   # Mockup / testing phase: single static site serving
-  #   /        -> LandinPage (landing)
-  #   /login/  -> login app (sign-in + forgot-password views)
+  #   /               -> LandinPage (landing)
+  #   /login/         -> login app (sign-in + forgot-password views)
+  #   /registration/  -> registration app (new-user sign-up)
   - type: web
     name: hunar-vikas-frontend
     runtime: static
-    buildCommand: npm --prefix LandinPage ci && npm --prefix LandinPage run build && npm --prefix login ci && npm --prefix login run build && rm -rf LandinPage/dist/login && cp -r login/dist LandinPage/dist/login
+    buildCommand: npm --prefix LandinPage ci && npm --prefix LandinPage run build && npm --prefix login ci && npm --prefix login run build && npm --prefix Registration ci && npm --prefix Registration run build && rm -rf LandinPage/dist/login LandinPage/dist/registration && cp -r login/dist LandinPage/dist/login && cp -r Registration/dist LandinPage/dist/registration
     staticPublishPath: LandinPage/dist
     pullRequestPreviewsEnabled: true
