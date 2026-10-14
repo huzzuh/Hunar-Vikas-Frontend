@@ -6,6 +6,9 @@ services:
   - type: web
     name: hunar-vikas-frontend
     runtime: static
-    buildCommand: npm --prefix LandinPage ci && npm --prefix LandinPage run build && npm --prefix login ci && npm --prefix login run build && npm --prefix Registration ci && npm --prefix Registration run build && rm -rf LandinPage/dist/login LandinPage/dist/registration && cp -r login/dist LandinPage/dist/login && cp -r Registration/dist LandinPage/dist/registration
+    buildCommand: npm ci --prefix LandinPage && npm run build --prefix LandinPage && npm ci --prefix login && npm run build --prefix login && npm ci --prefix Registration && npm run build --prefix Registration && rm -rf LandinPage/dist/login LandinPage/dist/registration && cp -r login/dist LandinPage/dist/login && cp -r Registration/dist LandinPage/dist/registration
     staticPublishPath: LandinPage/dist
     pullRequestPreviewsEnabled: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22

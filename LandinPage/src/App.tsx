@@ -97,7 +97,7 @@ function Header() {
         </nav>
         <div className="header-actions">
           <a href="/login/" className="btn btn-outline hide-sm">Sign In</a>
-          <a href="/login/" className="btn btn-primary hide-sm">Get Started →</a>
+          <a href="/registration/" className="btn btn-primary hide-sm">Get Started →</a>
           <button className="icon-btn menu-btn" aria-label="Menu" onClick={() => setOpen((v) => !v)}>
             {open ? '✕' : '☰'}
           </button>
