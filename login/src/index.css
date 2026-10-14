@@ -167,7 +167,7 @@ a { color: inherit; }
 .pw-toggle:hover { color: var(--green-800); background: var(--green-50); }
 .err { color: #a93226; font-size: 12px; font-weight: 600; margin-top: 5px; display: block; }
 
-.remember { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #33414f; cursor: pointer; margin: 4px 0 16px; user-select: none; }
+.remember { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #33414f; cursor: pointer; margin: 4px 0 16px; -webkit-user-select: none; user-select: none; }
 .remember input { position: absolute; opacity: 0; pointer-events: none; }
 .checkmark {
   width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--green-900);
@@ -208,6 +208,20 @@ a { color: inherit; }
 .footer-inner p { font-size: 12px; color: var(--muted); margin: 0; }
 .footer a { text-underline-offset: 3px; }
 .footer a:hover { color: var(--green-800); }
+
+/* Text selection: everything is non-selectable except editable fields,
+   so tapping/clicking anywhere never highlights text accidentally.
+   Logic: `user-select: none` inherits from the root, and only real
+   text-entry elements opt back into `text`. To make any specific copy
+   (e.g. contact details) selectable later, add class `allow-select`. */
+html, body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.control input, textarea, [contenteditable="true"], .allow-select {
+  -webkit-user-select: text;
+  user-select: text;
+}
 
 /* Responsive */
 @media (max-width: 1020px) {

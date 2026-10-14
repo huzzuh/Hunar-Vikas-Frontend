@@ -320,6 +320,20 @@ a { color: inherit; }
 .footer a { text-underline-offset: 3px; }
 .footer a:hover { color: var(--green-800); }
 
+/* Text selection: everything is non-selectable except editable fields,
+   so tapping/clicking anywhere never highlights text accidentally.
+   Logic: `user-select: none` inherits from the root, and only real
+   text-entry elements opt back into `text`. To make any specific copy
+   (e.g. contact details) selectable later, add class `allow-select`. */
+html, body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+input, textarea, [contenteditable="true"], .allow-select {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* Responsive */
 @media (max-width: 1020px) {
   .hero { padding-top: 24px; }
