@@ -127,8 +127,8 @@ export default function App() {
                     </p>
                   )}
                   <div className="success-actions">
-                    <a href="/login/" className="btn btn-primary">
-                      Go to Sign In →
+                    <a href="/dashboard/" className="btn btn-primary">
+                      Open Dashboard →
                     </a>
                     <button type="button" className="btn btn-outline" onClick={reset}>
                       Register another account
