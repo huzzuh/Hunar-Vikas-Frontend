@@ -1,0 +1,38 @@
+/* Skill Passport: add-skill form + skill cards */
+.add-form {
+  display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;
+  background: var(--green-50); border: 1px solid var(--border); border-radius: 12px; padding: 10px;
+}
+.add-form input {
+  flex: 1; min-width: 180px; border: 1px solid var(--border); border-radius: 10px;
+  padding: 9px 12px; font-size: 13px; font-family: inherit; outline: 0; background: #fff;
+}
+.add-form input:focus { border-color: var(--green-700); box-shadow: 0 0 0 3px rgba(14,107,79,.16); }
+.level-pick { display: inline-flex; gap: 8px; align-items: center; font-size: 12.5px; font-weight: 700; }
+.level-pick select { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; font-family: inherit; font-size: 13px; }
+
+/* Skill cards */
+.skill-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; }
+.skill {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1px solid transparent; border-radius: 14px; padding: 8px;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.skill:hover { border-color: var(--border); transform: translateY(-3px); background: #fbfaf6; box-shadow: 0 12px 26px rgba(11, 61, 46, 0.12); }
+.thumb img { transition: transform .4s ease; }
+.skill:hover .thumb img { transform: scale(1.08); }
+.thumb {
+  width: 58px; height: 58px; border-radius: 12px; flex-shrink: 0;
+  display: grid; place-items: center; font-size: 20px; color: #fff;
+}
+.skill-text { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.skill-text strong { font-size: 12.5px; line-height: 1.25; }
+.dots { display: flex; gap: 4px; }
+.dot { width: 13px; height: 7px; border-radius: 999px; background: #d5e3d7; }
+.dot.on { background: var(--green-700); }
+.tag { font-size: 10.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; width: fit-content; }
+.tag.ok { background: var(--green-100); color: var(--green-800); }
+.tag.warn { background: #fef3d8; color: #92600a; }
+/* Photo banner replacing the dots row (cover crop, perfect fit) */
+.level-art { display: block; border-radius: 8px; overflow: hidden; }
+.level-art img { width: 100%; height: 54px; object-fit: cover; display: block; }

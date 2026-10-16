@@ -1,0 +1,117 @@
+/* Sidebar — compact fit (no scroll at normal heights) + entrance choreography */
+.side {
+  width: 252px; flex-shrink: 0;
+  background: linear-gradient(180deg, #0e4d3a 0%, #0b3d2e 100%);
+  color: #fff; position: sticky; top: 0; height: 100svh; max-height: 100svh;
+  display: flex; flex-direction: column; padding: 14px 12px; gap: 10px;
+  z-index: 60; overflow: hidden;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 8px 0 32px rgba(11, 61, 46, 0.18);
+}
+/* Soft ambient glow at the top of the rail */
+.side::before {
+  content: ""; position: absolute; top: -60px; left: -40px; right: -40px; height: 190px;
+  background: radial-gradient(closest-side, rgba(249, 223, 174, 0.16), transparent);
+  pointer-events: none;
+}
+@media (min-width: 961px) {
+  .side { animation: side-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+}
+@keyframes side-in {
+  from { opacity: 0; transform: translateX(-18px); }
+  to { opacity: 1; transform: none; }
+}
+/* Staggered rise for direct children carrying .anim (delay via --d) */
+.side .anim { opacity: 0; animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--d, 0ms); }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.side-top { padding: 0 4px 10px; border-bottom: 1px solid rgba(255,255,255,.12); }
+.brand-mark svg { transition: transform 0.3s ease; }
+.brand:hover .brand-mark svg { transform: rotate(-8deg) scale(1.06); }
+/* (scope pill retired) */
+@keyframes dot-ping {
+  0% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.45); }
+  70% { box-shadow: 0 0 0 6px rgba(230, 126, 34, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0); }
+}
+.side-nav {
+  display: flex; flex-direction: column; gap: 2px; overflow-y: auto; min-height: 0; flex: 1 1 auto;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.25) transparent;
+}
+.side-nav::-webkit-scrollbar { width: 5px; }
+.side-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.22); border-radius: 4px; }
+.side-nav::-webkit-scrollbar-track { background: transparent; }
+.nav-group { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+.nav-heading {
+  margin: 6px 6px 3px; font-size: 9.5px; letter-spacing: .18em; font-weight: 700;
+  color: rgba(255,255,255,.5); font-family: var(--font);
+}
+.side .brand,
+.side .side-link {
+  text-decoration: none;
+}
+.side-link {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  background: transparent; border: 0; cursor: pointer; text-align: left;
+  color: #cfe3d6; font-size: 12.5px; font-weight: 600;
+  padding: 7px 10px; border-radius: 10px;
+  transition: background .18s ease, color .18s ease, transform .15s ease, box-shadow .2s ease;
+}
+.side-link i { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; background: rgba(255,255,255,.08); font-size: 13px; flex-shrink: 0; transition: background .18s ease, color .18s ease, transform .18s ease; }
+.side-link:hover { background: rgba(255,255,255,.1); color: #fff; transform: translateX(3px); }
+.side-link:hover i { transform: scale(1.08); }
+.side-link:focus-visible { outline: 2px solid #f9dfae; outline-offset: 1px; }
+.side-link.active { background: var(--green-100); color: var(--green-900); box-shadow: 0 6px 16px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.4); }
+.side-link.active i { background: #fff; color: var(--green-800); }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); margin-left: auto; flex-shrink: 0; animation: dot-ping 2.2s ease-out infinite; }
+/* Profile trigger (always visible) + popup card (opens on click) */
+.profile-anchor { margin-top: auto; position: relative; }
+.profile-trigger {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); color: #fff;
+  border-radius: 12px; padding: 8px 10px; font-size: 12px; cursor: pointer; text-align: left;
+  transition: background .18s ease, transform .12s ease, box-shadow .2s ease;
+}
+.profile-trigger:hover { background: rgba(255,255,255,.13); transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,.25); }
+.profile-trigger:focus-visible { outline: 2px solid #f9dfae; outline-offset: 1px; }
+.profile-trigger .side-user-text { flex: 1; }
+.profile-trigger .side-user-text strong { font-size: 12.5px; }
+.profile-trigger .side-user-text small { font-size: 10.5px; }
+.avatar-xs { width: 32px; height: 32px; font-size: 11.5px; }
+.trig-chev { margin-left: auto; font-size: 11px; color: #9fc3ae; transition: transform .2s ease; }
+.trig-chev.open { transform: rotate(180deg); }
+.profile-pop {
+  position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 5;
+  background: #fff; color: var(--ink);
+  border: 1px solid var(--border); border-radius: 14px; padding: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.35);
+  transform-origin: bottom center;
+  animation: pop-up 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes pop-up {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+.profile-pop .side-user-text strong { color: var(--ink); }
+.profile-pop .side-user-text small { color: var(--muted); }
+.profile-pop .side-user-text .place i { color: var(--green-700); }
+.profile-pop .demo-pill { font-size: 9px; padding: 2px 8px; }
+.profile-scrim { position: fixed; inset: 0; z-index: 65; background: transparent; }
+.side-user { display: flex; gap: 10px; align-items: center; }
+.side-user-text { display: flex; flex-direction: column; line-height: 1.35; min-width: 0; gap: 1px; }
+.name-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.name-row strong { font-size: 12.5px; white-space: nowrap; }
+.side-user-text small { font-size: 10.5px; color: #cfe3d6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.side-user-text .place { display: inline-flex; gap: 4px; align-items: center; }
+.scrim { display: none; }
+
+/* Later-file overrides from the intelligence mix-in (cascade order preserved). */
+.nav-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.nav-heading {
+  margin: 8px 6px 4px; font-size: 10px; letter-spacing: .18em; font-weight: 700;
+  color: rgba(255,255,255,.5); font-family: var(--font);
+}
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); margin-left: auto; flex-shrink: 0; }

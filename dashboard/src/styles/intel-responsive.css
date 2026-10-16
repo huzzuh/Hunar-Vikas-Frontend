@@ -1,0 +1,16 @@
+/* Intelligence responsive */
+@media (max-width: 1180px) {
+  .intel-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 960px) {
+  .contextbar { padding: 12px 16px 0; }
+  .moving-grid { grid-template-columns: 1fr 1fr; }
+  .intel { padding: 18px; }
+}
+@media (max-width: 640px) {
+  .moving-grid { grid-template-columns: 1fr; }
+  .mix-wrap { flex-direction: column; align-items: stretch; }
+  .mix-donut { margin: 0 auto; }
+  .sector-refresh { margin-left: 0; }
+  .ctx-user { display: none; }
+}

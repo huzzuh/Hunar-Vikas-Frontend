@@ -1,0 +1,16 @@
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .hero.reveal.visible { animation: none; }
+  .btn, .side-link, .skill, .course, .bar span { transition: none; }
+  .popover, .toast, .profile-pop { animation: none; }
+  .traj-line, .reveal.visible .traj-line { animation: none; stroke-dashoffset: 0; }
+  .sector-chip, .velocity, .mix-legend li button { transition: none; }
+  .side { animation: none; }
+  .side .anim { opacity: 1; animation: none; }
+  .avatar-swap, .live-dot { animation: none; }
+  .profile-trigger, .trig-chev, .brand-mark svg, .side-link i { transition: none; }
+  .hero-cta .btn-primary::after { display: none; }
+  .dash-line { animation: none; }
+  .traj circle, .thumb img, .course-thumb i, .topbar, .intel-card, .rail-card { transition: none; }
+}

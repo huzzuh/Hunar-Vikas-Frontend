@@ -1,0 +1,85 @@
+/* Profile setup wizard */
+.modal-wide { max-width: 580px; }
+.setup-sub { display: block; font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+
+.setup-steps {
+  list-style: none; margin: 4px 0 16px; padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+}
+.setup-steps li { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.setup-steps li span {
+  width: 30px; height: 30px; border-radius: 50%; font-size: 12px; font-weight: 800;
+  display: inline-grid; place-items: center;
+  background: var(--green-50); color: var(--muted); border: 1.5px solid var(--border);
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+.setup-steps li small { font-size: 10.5px; font-weight: 600; color: var(--muted); }
+.setup-steps li.now span { background: var(--green-900); border-color: var(--green-900); color: #fff; }
+.setup-steps li.now small { color: var(--green-900); }
+.setup-steps li.done span { background: var(--green-100); border-color: var(--green-700); color: var(--green-800); }
+
+.setup-pane { animation: step-in .3s ease both; }
+@keyframes step-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.setup-lede { font-size: 13px; color: #44515e; margin: 0 0 14px; }
+.setup-hint { font-size: 12px; color: var(--muted); margin: 10px 0 0; display: flex; gap: 7px; align-items: center; }
+.setup-hint i { color: var(--green-700); }
+
+.setup-field { display: block; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+.setup-field input, .setup-field select {
+  display: block; width: 100%; margin-top: 6px;
+  border: 1px solid var(--border); border-radius: 10px; background: #fff;
+  padding: 10px 12px; font-size: 13.5px; font-family: inherit; outline: 0;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.setup-field input:focus, .setup-field select:focus {
+  border-color: var(--green-700); box-shadow: 0 0 0 3px rgba(14, 107, 79, 0.16);
+}
+
+.setup-skills { list-style: none; margin: 0 0 4px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.setup-skills li {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; background: #fff;
+}
+.thumb-sm { width: 40px; height: 40px; font-size: 15px; border-radius: 10px; }
+.setup-skill-name { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.setup-skill-name strong { font-size: 13px; }
+.setup-skill-name small { font-size: 11px; color: var(--muted); }
+.setup-skills .level-pick { font-size: 12px; }
+.danger-sm { width: 32px; height: 32px; font-size: 13px; color: #a93226; }
+.danger-sm:hover { background: #fdecea; border-color: #e5b4ae; }
+
+.chip-pick { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.pick {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1.5px solid var(--border); background: #fff; border-radius: 999px;
+  font-size: 12.5px; font-weight: 600; padding: 8px 14px; cursor: pointer; color: #33414f;
+  transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+.pick i { font-size: 10px; }
+.pick:hover { border-color: var(--green-700); color: var(--green-800); }
+.pick.on { background: var(--green-900); border-color: var(--green-900); color: #fff; }
+.pick:focus-visible { outline: 2px solid var(--green-700); outline-offset: 2px; }
+
+.opt-title { font-size: 12.5px; font-weight: 700; margin: 14px 0 8px; }
+.opt-title:first-of-type { margin-top: 0; }
+.opt-list { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 12px;
+  font-size: 13px; font-weight: 600; color: #33414f;
+  transition: border-color .15s ease, background .15s ease;
+}
+.opt:hover { border-color: var(--green-700); }
+.opt.on { border-color: var(--green-900); background: var(--green-50); color: var(--green-900); }
+.opt input { accent-color: var(--green-700); width: 16px; height: 16px; margin: 0; cursor: pointer; }
+
+.setup-foot { display: flex; gap: 10px; margin-top: 18px; }
+.setup-foot .btn-full { flex: 1; }
+
+@media (max-width: 640px) {
+  .modal-wide { padding: 16px; }
+  .setup-skills li { flex-wrap: wrap; }
+}

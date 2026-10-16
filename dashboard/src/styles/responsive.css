@@ -1,0 +1,31 @@
+/* Responsive */
+@media (max-width: 1180px) {
+  .content { grid-template-columns: minmax(0, 1fr) 320px; }
+  .skill-grid { grid-template-columns: 1fr 1fr; }
+  .course-grid { grid-template-columns: 1fr 1fr; }
+  .hide-md { display: none; }
+}
+@media (max-width: 960px) {
+  .side { position: fixed; left: 0; top: 0; transform: translateX(-102%); transition: transform .25s ease; box-shadow: 0 0 60px rgba(0,0,0,.3); }
+  .side.open { transform: none; }
+  .scrim.show { display: block; position: fixed; inset: 0; background: rgba(11,61,46,.4); z-index: 55; }
+  .topbar .menu { display: inline-grid; }
+  .content { grid-template-columns: 1fr; }
+  .hero { grid-template-columns: 1fr; }
+  .hero-visual { min-height: 0; }
+  .rail { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .rail-card { margin-bottom: 0; }
+  .rail-card:last-child { grid-column: 1 / -1; }
+  .top-search { display: none; }
+}
+@media (max-width: 640px) {
+  .topbar { padding: 10px 14px; gap: 10px; }
+  .content { padding: 14px 14px 4px; }
+  .greet strong { font-size: 15px; }
+  .loc, .demo-pill { display: none; }
+  .skill-grid, .course-grid { grid-template-columns: 1fr; }
+  .rail { grid-template-columns: 1fr; }
+  .hero { padding: 20px 18px; }
+  .hero-visual { min-height: 0; padding: 16px; }
+  .panel-head { flex-wrap: wrap; }
+}
