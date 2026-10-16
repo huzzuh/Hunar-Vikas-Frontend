@@ -1,77 +1,16 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import Logo from '@shared/Logo.tsx'
+import { copyText } from '@shared/clipboard.ts'
+import { isEmail, isName, isPassword } from '@shared/validators.ts'
+import { register } from './services/auth.service.ts'
 import './index.css'
 
-type Role = 'Citizen' | 'Artisan' | 'Employer' | 'Training Partner'
-
-const ROLES: { id: Role; icon: string; desc: string }[] = [
-  { id: 'Citizen', icon: 'fa-solid fa-user', desc: 'Jobs & training' },
-  { id: 'Artisan', icon: 'fa-solid fa-palette', desc: 'Showcase craft' },
-  { id: 'Employer', icon: 'fa-solid fa-briefcase', desc: 'Hire talent' },
-  { id: 'Training Partner', icon: 'fa-solid fa-person-chalkboard', desc: 'Offer courses' },
-]
-
-const STEPS = [
-  { title: 'Tell us who you are', desc: 'Pick the role that fits you best.' },
-  { title: 'Verify your email', desc: 'One quick code and you are in.' },
-  { title: 'Explore & grow', desc: 'Skills, training and opportunities.' },
-]
-
-function Logo() {
-  return (
-    <a className="brand" href="/" aria-label="Hunar Vikas India home">
-      <span className="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 32 32" width="30" height="30">
-          <path
-            d="M16 28C10 24 6 19 6 13c4 0 8 2 10 6-1-6 1-11 6-14 1 5 0 10-2 13 3-1 5-4 6-7 2 6-1 13-10 17z"
-            fill="#0E6B4F"
-          />
-          <path d="M17 5c1-2 3-3 5-3 0 2-1 4-3 5-1 1-2 0-2-2z" fill="#E67E22" />
-        </svg>
-      </span>
-      <span className="brand-text">
-        <strong>Hunar Vikas India</strong>
-        <small>Skills. People. Stronger Maharashtra.</small>
-      </span>
-    </a>
-  )
-}
-
-function RegisterVisual() {
-  return (
-    <aside className="brand-visual hero-fade" aria-label="Why join Hunar Vikas India">
-      <div className="visual-inner">
-        <p className="eyebrow">JOIN HUNAR VIKAS INDIA</p>
-        <h2>
-          Your skills deserve
-          <br />
-          <span className="light">an opportunity.</span>
-        </h2>
-        <ol className="steps">
-          {STEPS.map((s, i) => (
-            <li key={s.title}>
-              <span className="step-num" aria-hidden="true">
-                {i + 1}
-              </span>
-              <span>
-                <strong>{s.title}</strong>
-                <small>{s.desc}</small>
-              </span>
-            </li>
-          ))}
-        </ol>
-        <p className="visual-note">
-          <i className="fa-solid fa-shield-halved" aria-hidden="true" /> Free to join · Maharashtra pilot
-        </p>
-      </div>
-    </aside>
-  )
-}
+const MINI_STEPS = ['Create account', 'Verify email', 'Explore & grow']
 
 type Errors = { name?: string; email?: string; password?: string; confirm?: string; agree?: string }
 
 export default function App() {
-  const [role, setRole] = useState<Role>('Citizen')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -80,16 +19,18 @@ export default function App() {
   const [agree, setAgree] = useState(false)
   const [errors, setErrors] = useState<Errors>({})
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
+  const [newUserId, setNewUserId] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   function validate(): boolean {
     const next: Errors = {}
-    if (name.trim().length < 2) {
+    if (!isName(name)) {
       next.name = 'Enter your full name.'
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    if (!isEmail(email)) {
       next.email = 'Enter a valid email address.'
     }
-    if (password.length < 6) {
+    if (!isPassword(password)) {
       next.password = 'Password must be at least 6 characters.'
     }
     if (confirm !== password || confirm.length === 0) {
@@ -102,12 +43,26 @@ export default function App() {
     return Object.keys(next).length === 0
   }
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent): Promise<void> {
     e.preventDefault()
     if (status === 'loading') return
     if (!validate()) return
     setStatus('loading')
-    window.setTimeout(() => setStatus('success'), 900)
+    try {
+      const user = await register(name, email, password)
+      setNewUserId(user.userId)
+      setCopied(false)
+      setStatus('success')
+    } catch {
+      setStatus('idle')
+    }
+  }
+
+  async function copyId(): Promise<void> {
+    if (!newUserId) return
+    const ok = await copyText(newUserId)
+    setCopied(ok)
+    if (ok) window.setTimeout(() => setCopied(false), 2000)
   }
 
   function reset() {
@@ -118,13 +73,15 @@ export default function App() {
     setConfirm('')
     setAgree(false)
     setErrors({})
+    setNewUserId(null)
+    setCopied(false)
   }
 
   return (
     <>
       <header className="header">
         <div className="container header-inner">
-          <Logo />
+          <Logo tagline="Building Skills. Empowering Futures" />
           <div className="header-actions">
             <span className="header-note hide-sm">
               <i className="fa-solid fa-shield-halved" aria-hidden="true" /> Secure sign-up
@@ -138,9 +95,14 @@ export default function App() {
 
       <main className="container login-wrap">
         <div className="login-grid">
-          <RegisterVisual />
-
           <section className="login-card hero-fade" style={{ animationDelay: '150ms' }} aria-label="Create account">
+            <ol className="mini-steps" aria-label="How joining works">
+              {MINI_STEPS.map((s, i) => (
+                <li key={s}>
+                  <span className="num" aria-hidden="true">{i + 1}</span> {s}
+                </li>
+              ))}
+            </ol>
             {status === 'success' ? (
               <div className="success" role="status">
                 <span className="success-ico">
@@ -149,11 +111,21 @@ export default function App() {
                 <div>
                   <strong>Welcome, {name.trim()}!</strong>
                   <p>
-                    Your {role} account request is in. Demo only — no backend yet, so nothing was saved. <br />
+                    Your account is saved in this browser (demo, localStorage). <br />
                     <span className="muted">
-                      {email.trim()} · Maharashtra
+                      {email.trim()} · India
                     </span>
                   </p>
+                  {newUserId && (
+                    <p className="user-id-row">
+                      <span className="muted">Your ID:</span>{' '}
+                      <code className="user-id">{newUserId}</code>{' '}
+                      <button type="button" className="btn btn-outline btn-sm" onClick={copyId}>
+                        <i className="fa-regular fa-copy" aria-hidden="true" />{' '}
+                        {copied ? 'Copied!' : 'Copy'}
+                      </button>
+                    </p>
+                  )}
                   <div className="success-actions">
                     <a href="/login/" className="btn btn-primary">
                       Go to Sign In →
@@ -169,25 +141,6 @@ export default function App() {
                 <div className="login-head">
                   <h2>Create your account</h2>
                   <p>Join Hunar Vikas India and start your skills journey.</p>
-                </div>
-
-                <div className="role-group" role="radiogroup" aria-label="I am joining as">
-                  {ROLES.map((r) => (
-                    <button
-                      key={r.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={role === r.id}
-                      className={`role-btn ${role === r.id ? 'active' : ''}`}
-                      onClick={() => setRole(r.id)}
-                    >
-                      <i className={r.icon} aria-hidden="true" />
-                      <span>
-                        <strong>{r.id}</strong>
-                        <small>{r.desc}</small>
-                      </span>
-                    </button>
-                  ))}
                 </div>
 
                 <form onSubmit={onSubmit} noValidate>
@@ -342,8 +295,8 @@ export default function App() {
 
       <footer className="footer">
         <div className="container footer-inner">
-          <Logo />
-          <p>© 2026 Hunar Vikas India — Maharashtra pilot</p>
+          <Logo tagline="Building Skills. Empowering Futures" />
+          <p>© 2026 Hunar Vikas India — India pilot</p>
           <p>
             <a href="mailto:hello@hunarvikas.in">hello@hunarvikas.in</a>
           </p>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Logo from '@shared/Logo.tsx'
 import './index.css'
 
 const NAV = [
@@ -21,7 +22,7 @@ const SKILL_LINKS = [
 const TRUST = [
   { icon: 'fa-solid fa-users', title: 'Skill-first approach', sub: 'People, not just credentials' },
   { icon: 'fa-solid fa-leaf', title: 'Inclusive livelihoods', sub: 'Rural and urban communities' },
-  { icon: 'fa-solid fa-map-location-dot', title: 'Maharashtra pilot', sub: 'Built for local needs, with national potential' },
+  { icon: 'fa-solid fa-map-location-dot', title: 'India pilot', sub: 'Built for local needs, scaled for India' },
   { icon: 'fa-solid fa-handshake', title: 'Multiple stakeholders', sub: 'Citizens, employers, training partners and more' },
   { icon: 'fa-solid fa-chart-line', title: 'Data-driven decisions', sub: 'For a stronger, more resilient workforce' },
 ]
@@ -59,23 +60,6 @@ function useReveal() {
     els.forEach((el) => io.observe(el))
     return () => io.disconnect()
   }, [])
-}
-
-function Logo() {
-  return (
-    <a className="brand" href="/">
-      <span className="brand-mark" aria-hidden>
-        <svg viewBox="0 0 32 32" width="30" height="30">
-          <path d="M16 28C10 24 6 19 6 13c4 0 8 2 10 6-1-6 1-11 6-14 1 5 0 10-2 13 3-1 5-4 6-7 2 6-1 13-10 17z" fill="#0E6B4F" />
-          <path d="M17 5c1-2 3-3 5-3 0 2-1 4-3 5-1 1-2 0-2-2z" fill="#F59E0B" />
-        </svg>
-      </span>
-      <span className="brand-text">
-        <strong>Hunar Vikas India</strong>
-        <small>Skills. People. Stronger Maharashtra.</small>
-      </span>
-    </a>
-  )
 }
 
 function Header() {
@@ -122,7 +106,7 @@ function HeroArt() {
         <img
           className="people-photo"
           src="hero-people.jpg"
-          alt="Skilled tradesperson, artisan, entrepreneur and learner of Maharashtra with Gateway of India and Mumbai skyline"
+          alt="Skilled tradesperson, artisan, entrepreneur and learner of India with Gateway of India and Indian skylines"
         />
       </div>
     </div>
@@ -131,7 +115,6 @@ function HeroArt() {
 
 function Hero() {
   const [q, setQ] = useState('')
-  const loc = 'Maharashtra'
   const LINE1 = 'Empowering Talent,'
   const LINE2 = 'Enabling Employment'
   const DOT = ''
@@ -144,7 +127,7 @@ function Hero() {
     <section className="hero">
       <div className="container hero-grid">
         <div className="hero-copy">
-          <p className="eyebrow">SKILLS FOR A BRIGHTER MAHARASHTRA</p>
+          <p className="eyebrow">SKILLS FOR A BRIGHTER INDIA</p>
           <h1 className="typing-headline" aria-label="Empowering Talent, Enabling Employment">
             <span aria-hidden="true">
               {LINE1.slice(0, n1)
@@ -181,7 +164,7 @@ function Hero() {
           <p className="lede hero-fade" style={{ animationDelay: '300ms' }}>
             Hunar Vikas India is a skill-first platform that connects citizens, artisans, skilled tradespeople,
             home-based entrepreneurs, employers, training institutions and workforce insights — for a more
-            inclusive and prosperous Maharashtra.
+            inclusive and prosperous India.
           </p>
           <div className="hero-cta hero-fade" style={{ animationDelay: '500ms' }}>
             <a href="#skills" className="btn btn-primary btn-lg">⌕ &nbsp; Explore Skills &nbsp; →</a>
@@ -192,7 +175,8 @@ function Hero() {
             className="searchbar"
             onSubmit={(e) => {
               e.preventDefault()
-              alert(`Searching "${q || 'skills'}" in ${loc}`)
+              const term = q.trim()
+              window.location.href = term ? `/dashboard/?q=${encodeURIComponent(term)}` : '/dashboard/'
             }}
           >
             <div className="search-field">
@@ -206,7 +190,7 @@ function Hero() {
             </div>
             <div className="search-loc">
               <i className="fas fa-map-marker-alt loc-icon" aria-hidden="true" />
-              <span className="loc-text">Maharashtra</span>
+              <span className="loc-text">India</span>
             </div>
             <button className="btn btn-primary" type="submit">Search</button>
           </form>
@@ -291,7 +275,7 @@ function FeatureCards() {
             ))}
           </div>
           <div className="chart-x"><span>2024</span><span>2025</span><span>2026</span><span>2027</span></div>
-          <p className="chart-note"><i className="fa-solid fa-arrow-trend-up" aria-hidden="true" /> Growing opportunities across Maharashtra</p>
+          <p className="chart-note"><i className="fa-solid fa-arrow-trend-up" aria-hidden="true" /> Growing opportunities across India</p>
         </div>
         <a href="#" className="link">Explore Insights <i className="fa-solid fa-arrow-right" aria-hidden="true" /></a>
       </article>
@@ -328,13 +312,13 @@ function Future() {
       </div>
       <p className="future-text reveal" style={{ transitionDelay: '100ms' }}>
         Whether you are a student, artisan, job seeker, employer or training provider, Hunar Vikas India helps
-        you discover opportunities, build skills and be part of Maharashtra's growing and diverse economy.
+        you discover opportunities, build skills and be part of India's growing and diverse economy.
       </p>
       <div className="future-banner reveal" style={{ transitionDelay: '150ms' }}>
         <blockquote className="quote">
           <span className="qmark">❝</span>
           Skills create dignity, opportunities create stronger communities, and together they build a brighter
-          Maharashtra.
+          India.
           <span className="qline" />
         </blockquote>
       </div>
@@ -349,7 +333,7 @@ function Footer() {
         <Logo />
         <p>© 2026 Hunar Vikas India — System Online</p>
         <p>
-          Hunar Vikas India<br />Maharashtra pilot<br />India
+          Hunar Vikas India<br />India pilot
         </p>
         <p>
           <a href="mailto:hello@hunarvikas.in">hello@hunarvikas.in</a>

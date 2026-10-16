@@ -1,79 +1,62 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import Logo from '@shared/Logo.tsx'
+import { copyText } from '@shared/clipboard.ts'
+import { isEmail, isPassword } from '@shared/validators.ts'
+import { sendResetLink, signIn } from './services/auth.service.ts'
 import './index.css'
 
-type Role = 'Citizen' | 'Artisan' | 'Employer' | 'Training Partner'
 
-const ROLES: { id: Role; icon: string; desc: string }[] = [
-  { id: 'Citizen', icon: 'fa-solid fa-user', desc: 'Jobs & training' },
-  { id: 'Artisan', icon: 'fa-solid fa-palette', desc: 'Showcase craft' },
-  { id: 'Employer', icon: 'fa-solid fa-briefcase', desc: 'Hire talent' },
-  { id: 'Training Partner', icon: 'fa-solid fa-person-chalkboard', desc: 'Offer courses' },
-]
-
-function Logo() {
-  return (
-    <a className="brand" href="/" aria-label="Hunar Vikas India home">
-      <span className="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 32 32" width="30" height="30">
-          <path
-            d="M16 28C10 24 6 19 6 13c4 0 8 2 10 6-1-6 1-11 6-14 1 5 0 10-2 13 3-1 5-4 6-7 2 6-1 13-10 17z"
-            fill="#0E6B4F"
-          />
-          <path d="M17 5c1-2 3-3 5-3 0 2-1 4-3 5-1 1-2 0-2-2z" fill="#E67E22" />
-        </svg>
-      </span>
-      <span className="brand-text">
-        <strong>Hunar Vikas India</strong>
-        <small>Skills. People. Stronger Maharashtra.</small>
-      </span>
-    </a>
-  )
-}
-
-function LoginVisual() {
-  return (
-    <aside className="brand-visual hero-fade" aria-label="Building a skilled Maharashtra">
-      <img
-        className="brand-visual-img"
-        src={`${import.meta.env.BASE_URL}login-hero.png`}
-        alt="Building a skilled Maharashtra — Your skills matter, your journey starts here. Learn new skills, find opportunities, get recognised, build a brighter future. A stronger Maharashtra with skilled communities."
-      />
-    </aside>
-  )
-}
 
 export default function App() {
   const [view, setView] = useState<'login' | 'forgot'>('login')
-  const [role, setRole] = useState<Role>('Citizen')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [remember, setRemember] = useState(true)
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
+  const [signInError, setSignInError] = useState<string | null>(null)
+  const [signedInId, setSignedInId] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
   const [forgotEmail, setForgotEmail] = useState('')
   const [forgotError, setForgotError] = useState<string | undefined>(undefined)
   const [forgotStatus, setForgotStatus] = useState<'idle' | 'loading' | 'sent'>('idle')
 
   function validate(): boolean {
     const next: typeof errors = {}
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    if (!isEmail(email)) {
       next.email = 'Enter a valid email address.'
     }
-    if (password.length < 6) {
+    if (!isPassword(password)) {
       next.password = 'Password must be at least 6 characters.'
     }
     setErrors(next)
     return Object.keys(next).length === 0
   }
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent): Promise<void> {
     e.preventDefault()
     if (status === 'loading') return
     if (!validate()) return
     setStatus('loading')
-    window.setTimeout(() => setStatus('success'), 900)
+    setSignInError(null)
+    try {
+      const user = await signIn(email, password)
+      setSignedInId(user.userId)
+      setCopied(false)
+      setStatus('success')
+    } catch (err) {
+      setSignInError(err instanceof Error ? err.message : 'Sign-in failed. Please try again.')
+      setStatus('idle')
+    }
+  }
+
+  async function copyId(): Promise<void> {
+    if (!signedInId) return
+    const ok = await copyText(signedInId)
+    setCopied(ok)
+    if (ok) window.setTimeout(() => setCopied(false), 2000)
   }
 
   function openForgot() {
@@ -89,23 +72,28 @@ export default function App() {
     setForgotStatus('idle')
   }
 
-  function onForgotSubmit(e: FormEvent) {
+  async function onForgotSubmit(e: FormEvent): Promise<void> {
     e.preventDefault()
     if (forgotStatus === 'loading') return
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(forgotEmail.trim())) {
+    if (!isEmail(forgotEmail)) {
       setForgotError('Enter a valid email address.')
       return
     }
     setForgotError(undefined)
     setForgotStatus('loading')
-    window.setTimeout(() => setForgotStatus('sent'), 900)
+    try {
+      await sendResetLink(forgotEmail)
+      setForgotStatus('sent')
+    } catch {
+      setForgotStatus('idle')
+    }
   }
 
   return (
     <>
       <header className="header">
         <div className="container header-inner">
-          <Logo />
+          <Logo tagline="Building Skills. Empowering Futures" />
           <div className="header-actions">
             <span className="header-note hide-sm">
               <i className="fa-solid fa-shield-halved" aria-hidden="true" /> Secure sign-in
@@ -119,8 +107,6 @@ export default function App() {
 
       <main className="container login-wrap">
         <div className="login-grid">
-          <LoginVisual />
-
           <section
             className="login-card hero-fade"
             style={{ animationDelay: '150ms' }}
@@ -223,46 +209,43 @@ export default function App() {
                   <p>Sign in to continue to your Hunar Vikas workspace.</p>
                 </div>
 
-                <div className="role-group" role="radiogroup" aria-label="I am signing in as">
-                  {ROLES.map((r) => (
-                    <button
-                      key={r.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={role === r.id}
-                      className={`role-btn ${role === r.id ? 'active' : ''}`}
-                      onClick={() => setRole(r.id)}
-                    >
-                      <i className={r.icon} aria-hidden="true" />
-                      <span>
-                        <strong>{r.id}</strong>
-                        <small>{r.desc}</small>
-                      </span>
-                    </button>
-                  ))}
-                </div>
-
                 {status === 'success' ? (
                   <div className="success" role="status">
                     <span className="success-ico">
                       <i className="fa-solid fa-circle-check" aria-hidden="true" />
                     </span>
                     <div>
-                      <strong>Signed in as {role}</strong>
+                      <strong>Signed in successfully</strong>
                       <p>
-                        Demo only — this standalone login is not connected to a backend. <br />
-                        <span className="muted">{email.trim()} · Maharashtra</span>
+                        Welcome back to your Hunar Vikas workspace. <br />
+                        <span className="muted">{email.trim()} · India</span>
                       </p>
-                      <button
-                        type="button"
-                        className="btn btn-outline"
-                        onClick={() => {
-                          setStatus('idle')
-                          setPassword('')
-                        }}
-                      >
-                        Sign in with a different account
-                      </button>
+                      {signedInId && (
+                        <p className="user-id-row">
+                          <span className="muted">Your ID:</span>{' '}
+                          <code className="user-id">{signedInId}</code>{' '}
+                          <button type="button" className="btn btn-outline btn-sm" onClick={copyId}>
+                            <i className="fa-regular fa-copy" aria-hidden="true" />{' '}
+                            {copied ? 'Copied!' : 'Copy'}
+                          </button>
+                        </p>
+                      )}
+                      <div className="success-actions">
+                        <a href="/dashboard/" className="btn btn-primary">
+                          Open Dashboard →
+                        </a>
+                        <button
+                          type="button"
+                          className="btn btn-outline"
+                          onClick={() => {
+                            setStatus('idle')
+                            setPassword('')
+                            setSignedInId(null)
+                          }}
+                        >
+                          Sign in with a different account
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -339,6 +322,12 @@ export default function App() {
                       Keep me signed in on this device
                     </label>
 
+                    {signInError && (
+                      <p className="err signin-err" role="alert">
+                        {signInError}
+                      </p>
+                    )}
+
                     <button
                       type="submit"
                       className="btn btn-primary btn-lg btn-full"
@@ -351,14 +340,6 @@ export default function App() {
                       ) : (
                         <>Sign In →</>
                       )}
-                    </button>
-
-                    <div className="divider" aria-hidden="true">
-                      <span>or</span>
-                    </div>
-
-                    <button type="button" className="btn btn-outline btn-lg btn-full">
-                      <i className="fa-solid fa-mobile-screen" aria-hidden="true" /> Continue with Mobile OTP
                     </button>
                   </form>
                 )}
@@ -383,8 +364,8 @@ export default function App() {
 
       <footer className="footer">
         <div className="container footer-inner">
-          <Logo />
-          <p>© 2026 Hunar Vikas India — Maharashtra pilot</p>
+          <Logo tagline="Building Skills. Empowering Futures" />
+          <p>© 2026 Hunar Vikas India — India pilot</p>
           <p>
             <a href="mailto:hello@hunarvikas.in">hello@hunarvikas.in</a>
           </p>
